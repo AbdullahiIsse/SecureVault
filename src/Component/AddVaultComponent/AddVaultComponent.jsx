@@ -30,18 +30,26 @@ const AddVaultComponent = () => {
     }
 
     const addVault = async (title, text) => {
-        const encryptedTitle = AES.encrypt(title, encryptionKey).toString();
-        const encryptedText = AES.encrypt(text, encryptionKey).toString();
-        const address = config[31337].SecureVault.address;
-        const INFURA_ID = "8d3df0f60a2a4ebdb9cbdd53d234d214";
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        await window.ethereum.enable();
-        const signer = provider.getSigner();
-        const secureVault = new ethers.Contract(address, SecureVault, signer);
-        setLoading(true);
-        const tx = await secureVault.createVault(userAddress, encryptedTitle, encryptedText);
-        await tx.wait();
-        setLoading(false);
+        try {
+            const encryptedTitle = AES.encrypt(title, encryptionKey).toString();
+            const encryptedText = AES.encrypt(text, encryptionKey).toString();
+            const address = config[31337].SecureVault.address;
+            const INFURA_ID = '8d3df0f60a2a4ebdb9cbdd53d234d214';
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await window.ethereum.enable();
+            const signer = provider.getSigner();
+            const secureVault = new ethers.Contract(address, SecureVault, signer);
+            setLoading(true);
+            const tx = await secureVault.createVault(userAddress, encryptedTitle, encryptedText);
+            await tx.wait();
+            setLoading(false);
+        } catch (error) {
+            console.error('Error adding vault:', error);
+            alert("Transaction failed please try again");
+            setLoading(false);
+            resetFormFields();
+
+        }
     };
 
 
